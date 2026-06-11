@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.vscode/
+formulas/
+formulas_step2/
+formulas_step3/
+formulas_step4/
