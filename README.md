@@ -47,25 +47,43 @@
 物理引擎通过数值解算（欧拉/四阶龙格库塔积分）实时演化以下物理状态：
 
 ### 2.1 真空腔室负压动态演化与泄漏衰减模型
-单个负压吸盘内部的绝对气体压力 $P_i$ 的变化率由理想气体守恒方程决定：
-$$\frac{dP_i}{dt} = \frac{R \cdot T}{V_{cup}} \left( \dot{m}_{in, i} - \dot{m}_{out, i} \right)$$
+单个负压吸盘内部的绝对气体压力 *P_i* 的变化率由理想气体守恒方程决定：
+<p align="center">
+  <img src="docs/formulas/eq_pressure.png" alt="Pressure ODE" width="450">
+</p>
+
 其中：
-*   **流体泄漏流量** $\dot{m}_{in, i}$ 采用孔口出流公式建模，包含微观表面粗糙度 $R_a$ 与宏观拼缝宽度 $w_{gap}$ 和深度 $d_{gap}$ 组成的泄漏面积：
-    $$\dot{m}_{in, i} = C_d \cdot A_{leak, i} \cdot \sqrt{2\rho_{atm}(P_{atm} - P_i)}$$
-    $$A_{leak, i} = \pi \cdot D_{cup} \cdot \max(0, R_a - \delta_{seal}) + 2 \cdot w_{gap} \cdot d_{gap}$$
-*   **风机抽气流量** $\dot{m}_{out, i}$ 由控制器输出的实时风机转速 $\omega$ 决定：
-    $$\dot{m}_{out, i} = \rho_i \cdot S_{max} \cdot \frac{\omega}{\omega_{max}} \cdot \frac{P_i - P_{limit}}{P_{atm} - P_{limit}}$$
+*   **流体泄漏流量** *m_in, i* 采用孔口出流公式建模，包含微观表面粗糙度 *R_a* 与宏观拼缝宽度 *w_gap* 和深度 *d_gap* 组成的泄漏面积：
+<p align="center">
+  <img src="docs/formulas/eq_leakage_flow.png" alt="Leakage Mass Flow" width="480">
+</p>
+<p align="center">
+  <img src="docs/formulas/eq_leakage_area.png" alt="Leakage Area" width="550">
+</p>
+
+*   **风机抽气流量** *m_out, i* 由控制器输出的实时风机转速 *ω* 决定：
+<p align="center">
+  <img src="docs/formulas/eq_suction_flow.png" alt="Suction Flow" width="520">
+</p>
 
 ### 2.2 垂直幕墙滑动边界与滑移安全系数 (Slip SF)
-机器人与玻璃表面的法向压紧力 $F_{normal}$ 表示为：
-$$F_{normal} = F_{suction} + F_{preload} + F_{gravity, z} - F_{wind, normal} - F_{spray, normal}$$
+机器人与玻璃表面的法向压紧力 *F_normal* 表示为：
+<p align="center">
+  <img src="docs/formulas/eq_normal_force.png" alt="Normal Force" width="500">
+</p>
+
 滑移安全系数（静摩擦力上限与外切向载荷之比）定义为：
-$$SF_{slip} = \frac{\mu \cdot F_{normal}}{F_{tangential}}$$
-*   当 $SF_{slip} < 1.0$ 时，机器人静摩擦失效，系统转为动摩擦（滑动摩擦力 $F_f = \mu_{dynamic} \cdot F_{normal}$），机器人将产生失稳向下滑移。
+<p align="center">
+  <img src="docs/formulas/eq_slip_sf.png" alt="Slip SF" width="300">
+</p>
+
+*   当 *SF_slip* < 1.0 时，机器人静摩擦失效，系统转为动摩擦（滑动摩擦力 *F_f* = *μ_dynamic* · *F_normal*），机器人将产生失稳向下滑移。
 
 ### 2.3 刚体倾覆边界模型 (Anti-overturning Boundary)
 以机器人最底端接触边缘为转动轴线进行抗弯矩分析：
-$$SF_{overturn} = \frac{M_{stabilizing}}{M_{overturning}}$$
+<p align="center">
+  <img src="docs/formulas/eq_overturn_sf.png" alt="Overturn SF" width="300">
+</p>
 *   **稳定弯矩** $M_{stabilizing}$ 包括重力法向分量、结构预紧力矩以及所有负压吸盘的附着力矩之和。
 *   **倾覆弯矩** $M_{overturning}$ 包括重力切向分量矩、阵风产生的倾覆弯矩、喷水反冲力矩和滚刷摩擦力矩。
 *   当 $SF_{overturn} < 1.0$ 时，机器人上侧将脱离壁面发生倾覆坠落。
@@ -77,7 +95,7 @@ $$SF_{overturn} = \frac{M_{stabilizing}}{M_{overturning}}$$
 ### 📈 Day 1: 物理动力学引擎设计与自检
 *   **研发任务**：针对玻璃幕墙垂直壁面，推导整机受力平衡方程与负压泄漏模型，设计自控物理引擎。
 *   **关键突破**：将密封圈弹性压缩量引入壁面粗糙度泄漏解算；引入一维线段跨越算法，在物理世界中还原了吸盘压过玻璃拼接胶缝时的瞬时失压现象。
-*   **输出成果**：完成了 `physics_engine.py` 解算器的搭建，并验证了针对 CUBEBOX 底盘（$9\text{ kg}$ 自重）的吸盘孔径与电机扭矩辨识结果，算法数值计算完全收敛。
+*   **输出成果**：完成了 `physics_engine.py` 解算器的搭建，并验证了针对 CUBEBOX 底盘（9 kg 自重）的吸盘孔径与电机扭矩辨识结果，算法数值计算完全收敛。
 
 ### 🛡️ Day 2: 卡尔曼滤波与 ADRC 自抗扰控制器开发
 *   **研发任务**：由于传感器抖动明显，需开发高效滤波算法；设计自抗扰负压闭环控制算法及硬中断紧急自锁状态机。
@@ -91,7 +109,9 @@ $$SF_{overturn} = \frac{M_{stabilizing}}{M_{overturning}}$$
 *   **研发任务**：使用 PySide6 开发数字孪生交互界面，绘制实时波形和 AI 洁净度图像评估模拟。
 *   **关键突破**：
     1.  建立 QThread 后台工作线程，通过 QMutex 进行线程互斥同步保护，写/读操作流程为：
-        $$\text{SharedEnv} \rightarrow \text{Mutex.lock()} \rightarrow \text{Data Read/Write} \rightarrow \text{Mutex.unlock()}$$
+<p align="center">
+  <img src="docs/formulas/eq_mutex_flow.png" alt="Mutex Thread Flow" width="600">
+</p>
     2.  运用 `pyqtgraph` 硬件加速库，同屏零延迟滚动更新“压力值 vs 跌落阈值”和“大风载荷”。
     3.  利用 QPainter 重绘出带有激光扫描擦除动画的高清摄像头清洁评估视窗，直击清洁效果可视化的产品痛点。
 *   **输出成果**：完成了 `src/dashboard.py` 看板设计，物理引擎、控制系统与界面全部联调成功，人机交互极致丝滑。
