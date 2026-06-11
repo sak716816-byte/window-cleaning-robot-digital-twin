@@ -6,8 +6,10 @@ One-click Application Entry Point (main.py)
 import os
 import sys
 
-# Ensure the root workspace directory is in python search path
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Ensure the root workspace directory and src are in python search path
+root_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(root_dir)
+sys.path.append(os.path.join(root_dir, "src"))
 
 from PySide6.QtWidgets import QApplication
 from src.dashboard import MainWindow, SharedEnvironment
