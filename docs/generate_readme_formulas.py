@@ -2,8 +2,8 @@ import os
 import matplotlib.pyplot as plt
 
 # Paths Setup
-workspace_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-formulas_dir = os.path.join(workspace_dir, "docs", "formulas")
+workspace_dir = r"C:\Users\16906\Desktop\中科绿洲"
+formulas_dir = os.path.join(workspace_dir, "docs", "equations")
 os.makedirs(formulas_dir, exist_ok=True)
 
 def generate_formula_image(latex_str, filename, size=(6, 0.8), fontsize=14):

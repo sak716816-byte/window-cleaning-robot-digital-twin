@@ -49,32 +49,32 @@
 ### 2.1 真空腔室负压动态演化与泄漏衰减模型
 单个负压吸盘内部的绝对气体压力 *P_i* 的变化率由理想气体守恒方程决定：
 <p align="center">
-  <img src="docs/formulas/eq_pressure.png" alt="Pressure ODE" width="450">
+  <img src="docs/equations/eq_pressure.png" alt="Pressure ODE" width="450">
 </p>
 
-其中：
+    其中：
 *   **流体泄漏流量** *m_in, i* 采用孔口出流公式建模，包含微观表面粗糙度 *R_a* 与宏观拼缝宽度 *w_gap* 和深度 *d_gap* 组成的泄漏面积：
 <p align="center">
-  <img src="docs/formulas/eq_leakage_flow.png" alt="Leakage Mass Flow" width="480">
+  <img src="docs/equations/eq_leakage_flow.png" alt="Leakage Mass Flow" width="480">
 </p>
 <p align="center">
-  <img src="docs/formulas/eq_leakage_area.png" alt="Leakage Area" width="550">
+  <img src="docs/equations/eq_leakage_area.png" alt="Leakage Area" width="550">
 </p>
 
 *   **风机抽气流量** *m_out, i* 由控制器输出的实时风机转速 *ω* 决定：
 <p align="center">
-  <img src="docs/formulas/eq_suction_flow.png" alt="Suction Flow" width="520">
+  <img src="docs/equations/eq_suction_flow.png" alt="Suction Flow" width="520">
 </p>
 
 ### 2.2 垂直幕墙滑动边界与滑移安全系数 (Slip SF)
 机器人与玻璃表面的法向压紧力 *F_normal* 表示为：
 <p align="center">
-  <img src="docs/formulas/eq_normal_force.png" alt="Normal Force" width="500">
+  <img src="docs/equations/eq_normal_force.png" alt="Normal Force" width="500">
 </p>
 
 滑移安全系数（静摩擦力上限与外切向载荷之比）定义为：
 <p align="center">
-  <img src="docs/formulas/eq_slip_sf.png" alt="Slip SF" width="300">
+  <img src="docs/equations/eq_slip_sf.png" alt="Slip SF" width="300">
 </p>
 
 *   当 *SF_slip* < 1.0 时，机器人静摩擦失效，系统转为动摩擦（滑动摩擦力 *F_f* = *μ_dynamic* · *F_normal*），机器人将产生失稳向下滑移。
@@ -82,7 +82,7 @@
 ### 2.3 刚体倾覆边界模型 (Anti-overturning Boundary)
 以机器人最底端接触边缘为转动轴线进行抗弯矩分析：
 <p align="center">
-  <img src="docs/formulas/eq_overturn_sf.png" alt="Overturn SF" width="300">
+  <img src="docs/equations/eq_overturn_sf.png" alt="Overturn SF" width="300">
 </p>
 *   **稳定弯矩** $M_{stabilizing}$ 包括重力法向分量、结构预紧力矩以及所有负压吸盘的附着力矩之和。
 *   **倾覆弯矩** $M_{overturning}$ 包括重力切向分量矩、阵风产生的倾覆弯矩、喷水反冲力矩和滚刷摩擦力矩。
@@ -110,7 +110,7 @@
 *   **关键突破**：
     1.  建立 QThread 后台工作线程，通过 QMutex 进行线程互斥同步保护，写/读操作流程为：
 <p align="center">
-  <img src="docs/formulas/eq_mutex_flow.png" alt="Mutex Thread Flow" width="600">
+  <img src="docs/equations/eq_mutex_flow.png" alt="Mutex Thread Flow" width="600">
 </p>
     2.  运用 `pyqtgraph` 硬件加速库，同屏零延迟滚动更新“压力值 vs 跌落阈值”和“大风载荷”。
     3.  利用 QPainter 重绘出带有激光扫描擦除动画的高清摄像头清洁评估视窗，直击清洁效果可视化的产品痛点。
